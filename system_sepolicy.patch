@@ -1,0 +1,61 @@
+From 85c736b2bbc28c913c19d22c9bda5e407210633f Mon Sep 17 00:00:00 2001
+From: Coldwindofnowhere <coldwindofnowhere@gmail.com>
+Date: Sat, 19 Nov 2016 11:01:09 +0100
+Subject: [PATCH] Needed for our blobs
+
+Change-Id: I347cb825c640393f6ba9c58092abc0789b5ff32c
+---
+ domain.te | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/domain.te b/domain.te
+index 4a43772..c512f8e 100644
+--- a/domain.te
++++ b/domain.te
+@@ -300,6 +300,7 @@ neverallow {
+   -dalvikcache_data_file
+   -system_data_file # shared libs in apks
+   -apk_data_file
++  -system_app_data_file
+ }:file no_x_file_perms;
+ 
+ neverallow { domain userdebug_or_eng(`-shell') } nativetest_data_file:file no_x_file_perms;
+@@ -308,7 +309,7 @@ neverallow { domain userdebug_or_eng(`-shell') } nativetest_data_file:file no_x_
+ neverallow { domain -init } property_data_file:dir no_w_dir_perms;
+ neverallow { domain -init } property_data_file:file { no_w_file_perms no_x_file_perms };
+ neverallow { domain -init } property_type:file { no_w_file_perms no_x_file_perms };
+-neverallow { domain -init } properties_device:file { no_w_file_perms no_x_file_perms };
++neverallow { domain -init } properties_device:file { no_w_file_perms };
+ neverallow { domain -init } properties_serial:file { no_w_file_perms no_x_file_perms };
+ 
+ # Only recovery should be doing writes to /system
+@@ -431,7 +432,7 @@ neverallow { domain userdebug_or_eng(`-dumpstate -shell -su -domain') } su_exec:
+ # https://code.google.com/p/android/issues/detail?id=23203
+ # which, long term, need to go away.
+ ifelse(target_needs_platform_text_relocations, `true',
+-  `neverallow * {
++  `neverallow { domain -audioserver -gpsd -mediaserver -rild -system_server } {
+     file_type
+     -system_file
+     -system_data_file
+@@ -440,7 +441,7 @@ ifelse(target_needs_platform_text_relocations, `true',
+     -asec_public_file
+   }:file execmod;'
+ ,
+-  `neverallow * {
++  `neverallow { domain -audioserver -gpsd -mediaserver -rild -system_server } {
+     file_type
+     -system_data_file
+     -apk_data_file
+@@ -457,7 +458,7 @@ neverallow * self:process { execstack execheap };
+ # prohibit non-zygote spawned processes from using shared libraries
+ # with text relocations. b/20013628 .
+ ifelse(target_needs_platform_text_relocations, `true', ,
+-  `neverallow { domain -appdomain } file_type:file execmod;'
++  `neverallow { domain -appdomain -audioserver -gpsd -mediaserver -rild -system_server } file_type:file execmod;'
+ )
+ 
+ neverallow { domain -init } proc:{ file dir } mounton;
+-- 
+2.7.4
+

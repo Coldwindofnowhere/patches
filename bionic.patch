@@ -1,0 +1,47 @@
+From ad0d73ebf5184fc4bb059a0bb08b461a0e132734 Mon Sep 17 00:00:00 2001
+From: Coldwindofnowhere <coldwindofnowhere@gmail.com>
+Date: Sun, 20 Nov 2016 11:25:03 +0100
+Subject: [PATCH] Restore non-pie support
+
+Change-Id: I33822ac43a883350fbf8f5f6db3d5b6f6ccce455
+---
+ linker/Android.mk | 4 ++++
+ linker/linker.cpp | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/linker/Android.mk b/linker/Android.mk
+index 7221d12..371c795 100644
+--- a/linker/Android.mk
++++ b/linker/Android.mk
+@@ -54,6 +54,10 @@ ifeq ($(TARGET_IS_64_BIT),true)
+ LOCAL_CPPFLAGS += -DTARGET_IS_64_BIT
+ endif
+ 
++ifeq ($(TARGET_ENABLE_NON_PIE_SUPPORT),true)
++    LOCAL_CFLAGS += -DENABLE_NON_PIE_SUPPORT
++endif
++
+ ifeq ($(TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS),true)
+ ifeq ($(user_variant),user)
+ $(error Do not enable text relocations on user builds)
+diff --git a/linker/linker.cpp b/linker/linker.cpp
+index 9b1f97b..653c883 100644
+--- a/linker/linker.cpp
++++ b/linker/linker.cpp
+@@ -4313,11 +4313,13 @@ static ElfW(Addr) __linker_init_post_relocation(KernelArgumentBlock& args, ElfW(
+   }
+   si->dynamic = nullptr;
+ 
++  #ifndef ENABLE_NON_PIE_SUPPORT
+   ElfW(Ehdr)* elf_hdr = reinterpret_cast<ElfW(Ehdr)*>(si->base);
+   if (elf_hdr->e_type != ET_DYN) {
+     __libc_fatal("\"%s\": error: only position independent executables (PIE) are supported.",
+                  args.argv[0]);
+   }
++  #endif
+ 
+   // Use LD_LIBRARY_PATH and LD_PRELOAD (but only if we aren't setuid/setgid).
+   parse_LD_LIBRARY_PATH(ldpath_env);
+-- 
+2.7.4
+
