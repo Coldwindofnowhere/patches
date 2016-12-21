@@ -1,24 +1,23 @@
-From a38c614ebdb679c49b398313ba6fcf88d0ac3d80 Mon Sep 17 00:00:00 2001
-From: sooti <sooti85@gmail.com>
-Date: Sun, 4 Sep 2016 19:43:53 +0300
-Subject: [PATCH] remove duplicate boot.img, its bad for our device and
- confuses ninja
+From e826c5f469be3c7f314bf6ab4b3755bbd6a6990f Mon Sep 17 00:00:00 2001
+From: Coldwindofnowhere <coldwindofnowhere@gmail.com>
+Date: Wed, 21 Dec 2016 12:27:46 +0100
+Subject: [PATCH] Remove boot.img duplicate, needed to build cm
 
-Change-Id: I57f2571993f5037f0ef0193051e4e59d2c710e0e
+Change-Id: I8c7dbbea1be6b19528d0c1d744af8655a6d8c2e5
 ---
  core/Makefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/Makefile b/core/Makefile
-index d8cc365..8168dcc 100644
+index 6860bd9..592890d 100644
 --- a/core/Makefile
 +++ b/core/Makefile
-@@ -549,7 +549,7 @@ ifeq ($(strip $(BOARD_KERNEL_SEPARATED_DT)),true)
+@@ -568,7 +568,7 @@ ifeq ($(strip $(BOARD_KERNEL_SEPARATED_DT)),true)
    BOOTIMAGE_EXTRA_DEPS    := $(INSTALLED_DTIMAGE_TARGET)
  endif
  
 -INSTALLED_BOOTIMAGE_TARGET := $(PRODUCT_OUT)/boot.img
-+#INSTALLED_BOOTIMAGE_TARGET := $(PRODUCT_OUT)/boot.img
++# INSTALLED_BOOTIMAGE_TARGET := $(PRODUCT_OUT)/boot.img
  
  # BOARD_USES_RECOVERY_AS_BOOT = true must have BOARD_BUILD_SYSTEM_ROOT_IMAGE = true.
  ifeq ($(BOARD_USES_RECOVERY_AS_BOOT),true)

@@ -1,58 +1,57 @@
-From 724bdabb71f378adf39885294330eab88d6b2b6f Mon Sep 17 00:00:00 2001
-From: sooti <sooti85@gmail.com>
-Date: Sat, 7 Nov 2015 19:35:05 +0100
-Subject: [PATCH 1/2] twrp: flashutils: do not pack relocations for executables
+From d58b0de59eb61627520a816f10e4f292e96ded39 Mon Sep 17 00:00:00 2001
+From: Coldwindofnowhere <coldwindofnowhere@gmail.com>
+Date: Wed, 21 Dec 2016 12:30:58 +0100
+Subject: [PATCH 1/2] Flashutils: do not pack relocations for executables
 
-Change-Id: Ibe435ce44e4e35456bea88ee739ccd0b7c67567c
 ---
- flashutils/Android.mk | 4 ++++
- 1 file changed, 4 insertions(+)
+ flashutils/Android.mk | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/flashutils/Android.mk b/flashutils/Android.mk
-index ab552b1..57754fc 100644
+index ab552b1..77b688d 100644
 --- a/flashutils/Android.mk
 +++ b/flashutils/Android.mk
-@@ -41,6 +41,7 @@ LOCAL_CFLAGS += -Dmain=erase_image_main
+@@ -20,6 +20,7 @@ $(foreach board_define,$(BOARD_RECOVERY_DEFINES), \
+ include $(BUILD_STATIC_LIBRARY)
+ 
+ include $(CLEAR_VARS)
++LOCAL_PACK_MODULE_RELOCATIONS := false
+ LOCAL_SRC_FILES := flash_image.c
+ LOCAL_MODULE := libflash_image
+ LOCAL_MODULE_TAGS := optional
+@@ -27,6 +28,7 @@ LOCAL_CFLAGS += -Dmain=flash_image_main
  include $(BUILD_STATIC_LIBRARY)
  
  include $(CLEAR_VARS)
 +LOCAL_PACK_MODULE_RELOCATIONS := false
  LOCAL_SRC_FILES := dump_image.c
- LOCAL_MODULE := utility_dump_image
+ LOCAL_MODULE := libdump_image
  LOCAL_MODULE_TAGS := optional
-@@ -53,6 +54,8 @@ LOCAL_FORCE_STATIC_EXECUTABLE := true
- include $(BUILD_EXECUTABLE)
- 
- include $(CLEAR_VARS)
-+LOCAL_PACK_MODULE_RELOCATIONS := false
-+LOCAL_PACK_MODULE_RELOCATIONS := false
- LOCAL_SRC_FILES := flash_image.c
- LOCAL_MODULE := utility_flash_image
- LOCAL_MODULE_TAGS := optional
-@@ -65,6 +68,7 @@ LOCAL_FORCE_STATIC_EXECUTABLE := true
- include $(BUILD_EXECUTABLE)
+@@ -34,6 +36,7 @@ LOCAL_CFLAGS += -Dmain=dump_image_main
+ include $(BUILD_STATIC_LIBRARY)
  
  include $(CLEAR_VARS)
 +LOCAL_PACK_MODULE_RELOCATIONS := false
  LOCAL_SRC_FILES := erase_image.c
- LOCAL_MODULE := utility_erase_image
+ LOCAL_MODULE := liberase_image
  LOCAL_MODULE_TAGS := optional
 -- 
 2.7.4
 
 
-From 480182918b48901c02fd78ba1fd7b9b1ac1c0213 Mon Sep 17 00:00:00 2001
+From 6eb24facce334fdf9bbdeb93be3581b2b0f06a84 Mon Sep 17 00:00:00 2001
 From: Coldwindofnowhere <coldwindofnowhere@gmail.com>
-Date: Sat, 19 Nov 2016 17:24:24 +0100
-Subject: [PATCH 2/2] Fix build with cm
+Date: Wed, 21 Dec 2016 12:31:44 +0100
+Subject: [PATCH 2/2] fix libcrypto_utils_static dependency
 
+Needed to build cm
 ---
  minadbd/Android.mk | 2 +-
  updater/Android.mk | 1 +
  2 files changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/minadbd/Android.mk b/minadbd/Android.mk
-index ef59945..f221482 100644
+index 3d675dd..7223221 100644
 --- a/minadbd/Android.mk
 +++ b/minadbd/Android.mk
 @@ -22,7 +22,7 @@ LOCAL_MODULE := libminadbd
@@ -61,9 +60,9 @@ index ef59945..f221482 100644
  LOCAL_C_INCLUDES := $(LOCAL_PATH)/.. system/core/adb
 -LOCAL_WHOLE_STATIC_LIBRARIES := libadbd
 +LOCAL_WHOLE_STATIC_LIBRARIES := libadbd libcrypto_utils_static
- LOCAL_SHARED_LIBRARIES := libbase liblog libcutils libc libcrypto
+ LOCAL_SHARED_LIBRARIES := libbase liblog libcutils libc
  
- include $(BUILD_SHARED_LIBRARY)
+ ifeq ($(shell test $(PLATFORM_SDK_VERSION) -lt 24; echo $$?),0)
 diff --git a/updater/Android.mk b/updater/Android.mk
 index 23ba592..f58b86c 100644
 --- a/updater/Android.mk
